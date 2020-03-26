@@ -1,0 +1,12 @@
+{
+    "private": true,
+    "name": "scratch-blocks",
+    "version": "0.1.0",
+    "description": "ES6 import + 可以看到源码的调试",
+    "main": "./shim/vertical.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "bing.hu@ubtrobot.com",
+    "license": "MIT"
+}
