@@ -42,10 +42,17 @@ var COMPILED = true;
 var goog = {};
 
 /**
- * goog必须在全局空间中才能正常工作
+ * 需要提前定义Blockly
  */
-var _global = window || global;
-_global.goog = goog;
+var Blockly = {};
+
+/**
+ * _global
+ */
+var _global = {
+  Blockly: Blockly,
+  goog: goog,
+};
 
 /**
  * Reference to the global context.  In most cases this will be 'window'.
