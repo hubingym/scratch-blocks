@@ -1,2 +1,2 @@
 
-module.exports = Blockly;
+export default Blockly;
