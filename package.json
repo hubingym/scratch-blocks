@@ -5,13 +5,18 @@
   "description": "ES6 import + 可以看到源码的调试",
   "main": "./shim/vertical.js",
   "scripts": {
-    "build": "./build.sh && rollup -c",
+    "all": "npm run build && npm run compress-vertical && npm run compress-blockly && npm run remove-comment-blockly",
+    "build": "./build.sh",
+    "compress-vertical": "rollup -c",
+    "compress-blockly": "rollup -c rollup.blockly.config.js",
+    "remove-comment-blockly": "tsc --removeComments --allowJs -m none -t es5 --outFile shim/blockly_vertical.js blockly_vertical.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "bing.hu@ubtrobot.com",
   "license": "MIT",
   "devDependencies": {
     "rollup": "2.17.1",
-    "rollup-plugin-terser": "6.1.0"
+    "rollup-plugin-terser": "6.1.0",
+    "typescript": "3.9.5"
   }
 }
