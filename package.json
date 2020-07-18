@@ -5,11 +5,7 @@
   "description": "ES6 import + 可以看到源码的调试",
   "main": "./shim/vertical.js",
   "scripts": {
-    "all": "npm run build && npm run compress-vertical && npm run compress-blockly && npm run remove-comment-blockly",
     "build": "./build.sh",
-    "compress-vertical": "rollup -c",
-    "compress-blockly": "rollup -c rollup.blockly.config.js",
-    "remove-comment-blockly": "tsc --removeComments --allowJs -m none -t es5 --outFile shim/blockly_vertical.js blockly_vertical.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "bing.hu@ubtrobot.com",

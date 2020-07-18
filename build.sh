@@ -138,7 +138,7 @@ cat goog/base.js \
     goog/ui/tree/treenode.js \
     goog/ui/tree/typeahead.js > goog_all.js
 
-# gen blockly_vertical.js
+# gen blockly_vertical_with_comments.js
 cat goog_all.js \
     core/blockly.js \
     core/block.js \
@@ -232,10 +232,16 @@ cat goog_all.js \
     core/workspace_dragger.js \
     core/flyout_dragger.js \
     core/zoom_controls.js \
-    core/xml.js > blockly_vertical.js
+    core/xml.js > blockly_vertical_with_comments.js
 
 # delete goog_all.js
 rm -f goog_all.js
+
+# gen blockly_vertical.js
+tsc --removeComments --allowJs -m none -t es5 --outFile blockly_vertical.js blockly_vertical_with_comments.js
+
+# gen blockly_vertical.min.js
+rollup -c rollup.blockly.config.js
 
 # gen blocks_vertical.js
 cat blocks_common/colour.js \
@@ -257,12 +263,75 @@ cat blocks_common/colour.js \
     blocks_vertical/vertical_extensions.js > blocks_vertical.js
 
 # gen shim/vertical.js
-cat extra/header.js \
-    blockly_vertical.js \
-    blocks_vertical.js \
-    msg/messages.js \
-    msg/scratch_msgs.js \
-    extra/footer.js > shim/vertical.js
+# cat extra/header.js \
+#     blockly_vertical.js \
+#     blocks_vertical.js \
+#     msg/messages.js \
+#     msg/scratch_msgs.js \
+#     extra/footer.js > shim/vertical.js
+
+# gen shim/vertical.min.js
+# yarn rollup -c
+
+#gen generator_javascript.js
+cat generators/javascript.js \
+    generators/javascript/colour.js \
+    generators/javascript/lists.js \
+    generators/javascript/logic.js \
+    generators/javascript/loops.js \
+    generators/javascript/math.js \
+    generators/javascript/procedures.js \
+    generators/javascript/text.js \
+    generators/javascript/variables.js \
+    generators/javascript/variables_dynamic.js > generator_javascript.js
+
+#gen generator_python.js
+cat generators/python.js \
+    generators/python/colour.js \
+    generators/python/lists.js \
+    generators/python/logic.js \
+    generators/python/loops.js \
+    generators/python/math.js \
+    generators/python/procedures.js \
+    generators/python/text.js \
+    generators/python/variables.js \
+    generators/python/variables_dynamic.js > generator_python.js
+
+#gen generator_dart.js
+cat generators/dart.js \
+    generators/dart/colour.js \
+    generators/dart/lists.js \
+    generators/dart/logic.js \
+    generators/dart/loops.js \
+    generators/dart/math.js \
+    generators/dart/procedures.js \
+    generators/dart/text.js \
+    generators/dart/variables.js \
+    generators/dart/variables_dynamic.js > generator_dart.js
+
+#gen generator_lua.js
+cat generators/lua.js \
+    generators/lua/colour.js \
+    generators/lua/lists.js \
+    generators/lua/logic.js \
+    generators/lua/loops.js \
+    generators/lua/math.js \
+    generators/lua/procedures.js \
+    generators/lua/text.js \
+    generators/lua/variables.js \
+    generators/lua/variables_dynamic.js > generator_lua.js
+
+#gen generator_php.js
+cat generators/php.js \
+    generators/php/colour.js \
+    generators/php/lists.js \
+    generators/php/logic.js \
+    generators/php/loops.js \
+    generators/php/math.js \
+    generators/php/procedures.js \
+    generators/php/text.js \
+    generators/php/variables.js \
+    generators/php/variables_dynamic.js > generator_php.js
 
 # print infomation
 cat VERSION

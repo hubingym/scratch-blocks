@@ -4,7 +4,7 @@ import { terser } from "rollup-plugin-terser";
 export default {
   input: 'blockly_vertical.js',
   output: {
-    file: 'shim/blockly_vertical.min.js',
+    file: 'blockly_vertical.min.js',
     format: 'esm',
     plugins: [
       terser({

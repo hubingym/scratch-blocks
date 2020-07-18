@@ -105,3 +105,5 @@ dist
 
 # TernJS port file
 .tern-port
+
+blockly_vertical_with_comments.js
