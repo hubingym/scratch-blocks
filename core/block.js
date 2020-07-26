@@ -174,9 +174,14 @@ Blockly.Block = function(workspace, prototypeName, opt_id) {
     /** @type {string} */
     this.type = prototypeName;
     var prototype = Blockly.Blocks[prototypeName];
-    goog.asserts.assertObject(prototype,
+    if (prototype) {
+      goog.asserts.assertObject(prototype,
         'Error: Unknown block type "%s".', prototypeName);
-    goog.mixin(this, prototype);
+      goog.mixin(this, prototype);
+    } else if (Blockly.initWithDynamicJson) { // 使用json动态初始化
+      var ok = Blockly.initWithDynamicJson(prototypeName, this);
+      goog.asserts.assert(ok, 'Error: Unknown block type "%s".', prototypeName);
+    }
   }
 
   workspace.addTopBlock(this);

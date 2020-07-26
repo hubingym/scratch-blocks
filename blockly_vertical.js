@@ -23795,8 +23795,14 @@ Blockly.Block = function (workspace, prototypeName, opt_id) {
     if (prototypeName) {
         this.type = prototypeName;
         var prototype = Blockly.Blocks[prototypeName];
-        goog.asserts.assertObject(prototype, 'Error: Unknown block type "%s".', prototypeName);
-        goog.mixin(this, prototype);
+        if (prototype) {
+            goog.asserts.assertObject(prototype, 'Error: Unknown block type "%s".', prototypeName);
+            goog.mixin(this, prototype);
+        }
+        else if (Blockly.initWithDynamicJson) {
+            var ok = Blockly.initWithDynamicJson(prototypeName, this);
+            goog.asserts.assert(ok, 'Error: Unknown block type "%s".', prototypeName);
+        }
     }
     workspace.addTopBlock(this);
     if (goog.isFunction(this.init)) {
@@ -30032,7 +30038,8 @@ Blockly.FieldTextInput.prototype.init = function () {
             'y': 0,
             'width': this.size_.width,
             'height': this.size_.height,
-            'fill': this.sourceBlock_.getColourTertiary()
+            'fill': this.sourceBlock_.getColourTertiary(),
+            'rx': 15,
         });
         this.fieldGroup_.insertBefore(this.box_, this.textElement_);
     }
@@ -34106,6 +34113,9 @@ Blockly.Generator.prototype.blockToCode = function (block) {
         return this.blockToCode(block.getNextBlock());
     }
     var func = this[block.type];
+    if (!func && Blockly.Generator.getDynamicFunc) {
+        func = Blockly.Generator.getDynamicFunc(block.type);
+    }
     goog.asserts.assertFunction(func, 'Language "%s" does not know how to generate code for block type "%s".', this.name_, block.type);
     var code = func.call(block, block);
     if (goog.isArray(code)) {
