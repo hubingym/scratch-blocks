@@ -27008,7 +27008,7 @@ Blockly.Colours = {
     "stackGlow": "#FFF200",
     "stackGlowSize": 4,
     "stackGlowOpacity": 1,
-    "replacementGlow": "#FFF200",
+    "replacementGlow": "#FFFFFF",
     "replacementGlowSize": 2,
     "replacementGlowOpacity": 1,
     "colourPickerStroke": "#FFFFFF",
@@ -42842,6 +42842,7 @@ Blockly.WorkspaceSvg = function (options, opt_blockDragSurface, opt_wsDragSurfac
     this.useWorkspaceDragSurface_ =
         this.workspaceDragSurface_ && Blockly.utils.is3dSupported();
     this.highlightedBlocks_ = [];
+    this.glowingBlocks_ = [];
     this.audioManager_ = new Blockly.WorkspaceAudio(options.parentWorkspace);
     this.grid_ = this.options.gridPattern ?
         new Blockly.Grid(options.gridPattern, options.gridOptions) : null;
@@ -43221,14 +43222,26 @@ Blockly.WorkspaceSvg.prototype.highlightBlock = function (id, opt_state) {
     }
 };
 Blockly.WorkspaceSvg.prototype.glowBlock = function (id, isGlowingBlock) {
-    var block = null;
+    if (isGlowingBlock === undefined) {
+        for (var i = 0, block; block = this.glowingBlocks_[i]; i++) {
+            block.setGlowBlock(false);
+        }
+        this.glowingBlocks_.length = 0;
+        return;
+    }
     if (id) {
-        block = this.getBlockById(id);
+        var block = this.getBlockById(id);
         if (!block) {
             throw 'Tried to glow block that does not exist.';
         }
+        block.setGlowBlock(isGlowingBlock);
+        if (!isGlowingBlock) {
+            goog.array.remove(this.glowingBlocks_, block);
+        }
+        else if (this.glowingBlocks_.indexOf(block) == -1) {
+            this.glowingBlocks_.push(block);
+        }
     }
-    block.setGlowBlock(isGlowingBlock);
 };
 Blockly.WorkspaceSvg.prototype.glowStack = function (id, isGlowingStack) {
     var block = null;

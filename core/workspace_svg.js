@@ -96,6 +96,9 @@ Blockly.WorkspaceSvg = function(options, opt_blockDragSurface, opt_wsDragSurface
    */
   this.highlightedBlocks_ = [];
 
+  // 记录glowing
+  this.glowingBlocks_ = [];
+
   /**
    * Object in charge of loading, storing, and playing audio for a workspace.
    * @type {Blockly.WorkspaceAudio}
@@ -941,17 +944,28 @@ Blockly.WorkspaceSvg.prototype.highlightBlock = function(id, opt_state) {
 /**
  * Glow/unglow a block in the workspace.
  * @param {?string} id ID of block to find.
- * @param {boolean} isGlowingBlock Whether to glow the block.
+ * @param {boolean=} isGlowingBlock Whether to glow the block.
  */
 Blockly.WorkspaceSvg.prototype.glowBlock = function(id, isGlowingBlock) {
-  var block = null;
+  if (isGlowingBlock === undefined) {
+    for (var i = 0, block; block = this.glowingBlocks_[i]; i++) {
+      block.setGlowBlock(false);
+    }
+    this.glowingBlocks_.length = 0;
+    return;
+  }
   if (id) {
-    block = this.getBlockById(id);
+    var block = this.getBlockById(id);
     if (!block) {
       throw 'Tried to glow block that does not exist.';
     }
+    block.setGlowBlock(isGlowingBlock);
+    if (!isGlowingBlock) {
+      goog.array.remove(this.glowingBlocks_, block);
+    } else if (this.glowingBlocks_.indexOf(block) == -1) {
+      this.glowingBlocks_.push(block);
+    }
   }
-  block.setGlowBlock(isGlowingBlock);
 };
 
 /**
