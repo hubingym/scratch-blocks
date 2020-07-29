@@ -27008,7 +27008,7 @@ Blockly.Colours = {
     "stackGlow": "#FFF200",
     "stackGlowSize": 4,
     "stackGlowOpacity": 1,
-    "replacementGlow": "#FFFFFF",
+    "replacementGlow": "#FFF200",
     "replacementGlowSize": 2,
     "replacementGlowOpacity": 1,
     "colourPickerStroke": "#FFFFFF",
@@ -43204,7 +43204,7 @@ Blockly.WorkspaceSvg.prototype.traceOn = function () {
 Blockly.WorkspaceSvg.prototype.highlightBlock = function (id, opt_state) {
     if (opt_state === undefined) {
         for (var i = 0, block; block = this.highlightedBlocks_[i]; i++) {
-            block.setHighlighted(false);
+            block.highlightForReplacement(false);
         }
         this.highlightedBlocks_.length = 0;
     }
@@ -43217,7 +43217,7 @@ Blockly.WorkspaceSvg.prototype.highlightBlock = function (id, opt_state) {
         else if (this.highlightedBlocks_.indexOf(block) == -1) {
             this.highlightedBlocks_.push(block);
         }
-        block.setHighlighted(state);
+        block.highlightForReplacement(state);
     }
 };
 Blockly.WorkspaceSvg.prototype.glowBlock = function (id, isGlowingBlock) {
