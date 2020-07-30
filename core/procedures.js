@@ -429,6 +429,9 @@ Blockly.Procedures.createProcedureCallbackFactory_ = function(workspace) {
       block.moveBy(posX / scale, (-workspace.scrollY + 30) / scale);
       block.scheduleSnapAndBump();
       Blockly.Events.setGroup(false);
+
+      // 刷新toolbox
+      workspace.refreshToolboxSelection_();
     }
   };
 };
@@ -485,6 +488,10 @@ Blockly.Procedures.editProcedureCallbackFactory_ = function(block) {
     if (mutation) {
       Blockly.Procedures.mutateCallersAndPrototype(block.getProcCode(),
           block.workspace, mutation);
+      var workspace = block.workspace.isFlyout ?
+        block.workspace.targetWorkspace : block.workspace;
+      // 刷新toolbox
+      workspace.refreshToolboxSelection_();
     }
   };
 };
