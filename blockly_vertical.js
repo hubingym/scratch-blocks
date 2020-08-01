@@ -23799,9 +23799,12 @@ Blockly.Block = function (workspace, prototypeName, opt_id) {
             goog.asserts.assertObject(prototype, 'Error: Unknown block type "%s".', prototypeName);
             goog.mixin(this, prototype);
         }
-        else if (Blockly.initWithDynamicJson) {
-            var ok = Blockly.initWithDynamicJson(prototypeName, this);
+        else if (Blockly.Block.initWithDynamicJson) {
+            var ok = Blockly.Block.initWithDynamicJson(prototypeName, this);
             goog.asserts.assert(ok, 'Error: Unknown block type "%s".', prototypeName);
+        }
+        else {
+            goog.asserts.assertObject(prototype, 'Error: Unknown block type "%s".', prototypeName);
         }
     }
     workspace.addTopBlock(this);

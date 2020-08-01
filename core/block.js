@@ -175,12 +175,13 @@ Blockly.Block = function(workspace, prototypeName, opt_id) {
     this.type = prototypeName;
     var prototype = Blockly.Blocks[prototypeName];
     if (prototype) {
-      goog.asserts.assertObject(prototype,
-        'Error: Unknown block type "%s".', prototypeName);
+      goog.asserts.assertObject(prototype, 'Error: Unknown block type "%s".', prototypeName);
       goog.mixin(this, prototype);
-    } else if (Blockly.initWithDynamicJson) { // 使用json动态初始化
-      var ok = Blockly.initWithDynamicJson(prototypeName, this);
+    } else if (Blockly.Block.initWithDynamicJson) { // 使用json动态初始化
+      var ok = Blockly.Block.initWithDynamicJson(prototypeName, this);
       goog.asserts.assert(ok, 'Error: Unknown block type "%s".', prototypeName);
+    } else {
+      goog.asserts.assertObject(prototype, 'Error: Unknown block type "%s".', prototypeName);
     }
   }
 
