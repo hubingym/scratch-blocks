@@ -17316,7 +17316,7 @@ Blockly.ScratchMsgs.locales["zh-tw"] =
     "OPERATORS_EQUALS": "%1 = %2",
     "OPERATORS_AND": "%1 且 %2",
     "OPERATORS_OR": "%1 或 %2",
-    "OPERATORS_NOT": "%1 不成立",
+    "OPERATORS_NOT": "非 %1",
     "OPERATORS_JOIN": "字串組合 %1 %2",
     "OPERATORS_JOIN_APPLE": "apple",
     "OPERATORS_JOIN_BANANA": "banana",
