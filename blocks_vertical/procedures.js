@@ -927,6 +927,7 @@ Blockly.Blocks['argument_reporter_string_number'] = {
       ],
       "extensions": ["colours_more", "output_number", "output_string"]
     });
+    this.setOutput(true, ['Number', 'String']);
   }
 };
 
