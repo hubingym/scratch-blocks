@@ -50,6 +50,8 @@ var Blockly = {};
  * _global
  */
 var _global = {
+  navigator: window.navigator,
+  document: window.document,
   Blockly: Blockly,
   goog: goog,
 };

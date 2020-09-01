@@ -2,6 +2,8 @@ var COMPILED = true;
 var goog = {};
 var Blockly = {};
 var _global = {
+    navigator: window.navigator,
+    document: window.document,
     Blockly: Blockly,
     goog: goog,
 };
