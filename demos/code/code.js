@@ -90,7 +90,7 @@ Code.changeLanguage = function() {
   // Store the blocks for the duration of the reload.
   // MSIE 11 does not support sessionStorage on file:// URLs.
   if (window.sessionStorage) {
-    var xml = Blockly.Xml.workspaceToDom(Code.workspace);
+    var xml = Blockly.Xml.workspaceToDom(Code.workspace, true);
     var text = Blockly.Xml.domToText(xml);
     window.sessionStorage.loadOnceBlocks = text;
   }
@@ -257,7 +257,7 @@ Code.renderContent = function() {
   // Initialize the pane.
   if (content.id == 'content_xml') {
     var xmlTextarea = document.getElementById('content_xml');
-    var xmlDom = Blockly.Xml.workspaceToDom(Code.workspace);
+    var xmlDom = Blockly.Xml.workspaceToDom(Code.workspace, true);
     var xmlText = Blockly.Xml.domToPrettyText(xmlDom);
     xmlTextarea.value = xmlText;
     xmlTextarea.focus();

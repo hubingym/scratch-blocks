@@ -26709,9 +26709,13 @@ Blockly.BlockDragger.prototype.endBlockDrag = function (e, currentDragDeltaXY) {
     if (!deleted) {
         this.draggingBlock_.moveConnections_(delta.x, delta.y);
         this.draggingBlock_.setDragging(false);
-        this.draggedConnectionManager_.applyConnections();
-        this.draggingBlock_.render();
         this.fireMoveEvent_();
+        if (this.draggedConnectionManager_.wouldConnectBlock()) {
+            this.draggedConnectionManager_.applyConnections();
+        }
+        else {
+            this.draggingBlock_.render();
+        }
         this.draggingBlock_.scheduleSnapAndBump();
     }
     this.workspace_.setResizesEnabled(true);
@@ -26737,7 +26741,7 @@ Blockly.BlockDragger.prototype.endBlockDrag = function (e, currentDragDeltaXY) {
                 if (block.type == Blockly.PROCEDURES_CALL_BLOCK_TYPE) {
                     var procCode = block.getProcCode();
                     if (!Blockly.Procedures.getDefineBlock(procCode, ws)) {
-                        alert('To delete a block definition, first remove all uses of the block');
+                        alert(Blockly.Msg.PROCEDURE_USED);
                         ws.undo();
                         return;
                     }
@@ -29159,6 +29163,9 @@ Blockly.DraggedConnectionManager.prototype.dispose = function () {
 Blockly.DraggedConnectionManager.prototype.wouldDeleteBlock = function () {
     return this.wouldDeleteBlock_;
 };
+Blockly.DraggedConnectionManager.prototype.wouldConnectBlock = function () {
+    return !!this.closestConnection_;
+};
 Blockly.DraggedConnectionManager.prototype.applyConnections = function () {
     if (this.closestConnection_) {
         this.localConnection_.connect(this.closestConnection_);
@@ -30874,19 +30881,18 @@ Blockly.FieldColourSlider.prototype.sliderCallbackFactory_ = function (channel) 
         if (!thisField.sliderCallbacksEnabled_)
             return;
         var channelValue = event.target.getValue();
-        var hsv = goog.color.hexToHsv(thisField.getValue());
         switch (channel) {
             case 'hue':
-                hsv[0] = thisField.hue_ = channelValue;
+                thisField.hue_ = channelValue;
                 break;
             case 'saturation':
-                hsv[1] = thisField.saturation_ = channelValue;
+                thisField.saturation_ = channelValue;
                 break;
             case 'brightness':
-                hsv[2] = thisField.brightness_ = channelValue;
+                thisField.brightness_ = channelValue;
                 break;
         }
-        var colour = goog.color.hsvToHex(hsv[0], hsv[1], hsv[2]);
+        var colour = goog.color.hsvToHex(thisField.hue_, thisField.saturation_, thisField.brightness_);
         if (thisField.sourceBlock_) {
             colour = thisField.callValidator(colour);
         }
@@ -33494,7 +33500,7 @@ Blockly.VerticalFlyout = function (workspaceOptions) {
     workspaceOptions.setMetrics = this.setMetrics_.bind(this);
     Blockly.VerticalFlyout.superClass_.constructor.call(this, workspaceOptions);
     this.horizontalLayout_ = false;
-    this.checkboxes_ = [];
+    this.checkboxes_ = {};
 };
 goog.inherits(Blockly.VerticalFlyout, Blockly.Flyout);
 Blockly.VerticalFlyout.prototype.autoClose = false;
@@ -33687,11 +33693,15 @@ Blockly.VerticalFlyout.prototype.wheel_ = function (e) {
 };
 Blockly.VerticalFlyout.prototype.clearOldBlocks_ = function () {
     Blockly.VerticalFlyout.superClass_.clearOldBlocks_.call(this);
-    for (var i = 0, elem; elem = this.checkboxes_[i]; i++) {
-        elem.block.flyoutCheckbox = null;
-        goog.dom.removeNode(elem.svgRoot);
+    for (var checkboxId in this.checkboxes_) {
+        if (!Object.prototype.hasOwnProperty.call(this.checkboxes_, checkboxId)) {
+            continue;
+        }
+        var checkbox = this.checkboxes_[checkboxId];
+        checkbox.block.flyoutCheckbox = null;
+        goog.dom.removeNode(checkbox.svgRoot);
     }
-    this.checkboxes_ = [];
+    this.checkboxes_ = {};
 };
 Blockly.VerticalFlyout.prototype.addBlockListeners_ = function (root, block, rect) {
     Blockly.VerticalFlyout.superClass_.addBlockListeners_.call(this, root, block, rect);
@@ -33795,7 +33805,7 @@ Blockly.VerticalFlyout.prototype.createCheckbox_ = function (block, cursorX, cur
     }
     block.flyoutCheckbox = checkboxObj;
     this.workspace_.getCanvas().insertBefore(checkboxGroup, svgRoot);
-    this.checkboxes_.push(checkboxObj);
+    this.checkboxes_[block.id] = checkboxObj;
 };
 Blockly.VerticalFlyout.prototype.checkboxClicked_ = function (checkboxObj) {
     return function (e) {
@@ -33805,23 +33815,19 @@ Blockly.VerticalFlyout.prototype.checkboxClicked_ = function (checkboxObj) {
     }.bind(this);
 };
 Blockly.VerticalFlyout.prototype.setCheckboxState = function (blockId, value) {
-    for (var i = 0; i < this.checkboxes_.length; i++) {
-        var checkboxObj = this.checkboxes_[i];
-        if (checkboxObj.block.id === blockId) {
-            if (checkboxObj.clicked === value)
-                return;
-            var oldValue = checkboxObj.clicked;
-            checkboxObj.clicked = value;
-            if (checkboxObj.clicked) {
-                Blockly.utils.addClass((checkboxObj.svgRoot), 'checked');
-            }
-            else {
-                Blockly.utils.removeClass((checkboxObj.svgRoot), 'checked');
-            }
-            Blockly.Events.fire(new Blockly.Events.Change(checkboxObj.block, 'checkbox', null, oldValue, value));
-            return;
-        }
+    var checkboxObj = this.checkboxes_[blockId];
+    if (!checkboxObj || checkboxObj.clicked === value) {
+        return;
     }
+    var oldValue = checkboxObj.clicked;
+    checkboxObj.clicked = value;
+    if (checkboxObj.clicked) {
+        Blockly.utils.addClass(checkboxObj.svgRoot, 'checked');
+    }
+    else {
+        Blockly.utils.removeClass(checkboxObj.svgRoot, 'checked');
+    }
+    Blockly.Events.fire(new Blockly.Events.Change(checkboxObj.block, 'checkbox', null, oldValue, value));
 };
 Blockly.VerticalFlyout.prototype.isDragTowardWorkspace = function (currentDragDeltaXY) {
     var dx = currentDragDeltaXY.x;
@@ -35227,6 +35233,9 @@ Blockly.InsertionMarkerManager.prototype.dispose = function () {
 };
 Blockly.InsertionMarkerManager.prototype.wouldDeleteBlock = function () {
     return this.wouldDeleteBlock_;
+};
+Blockly.InsertionMarkerManager.prototype.wouldConnectBlock = function () {
+    return !!this.closestConnection_;
 };
 Blockly.InsertionMarkerManager.prototype.applyConnections = function () {
     if (this.closestConnection_) {
@@ -38591,15 +38600,18 @@ Blockly.Events.filter = function (queueIn, forward) {
     for (var i = 0, event; event = queue[i]; i++) {
         if (!event.isNull()) {
             var key = [event.type, event.blockId, event.workspaceId].join(' ');
-            var lastEvent = hash[key];
-            if (!lastEvent) {
-                hash[key] = event;
+            var lastEntry = hash[key];
+            var lastEvent = lastEntry ? lastEntry.event : null;
+            if (!lastEntry) {
+                hash[key] = { event: event, index: i };
                 mergedQueue.push(event);
             }
-            else if (event.type == Blockly.Events.MOVE) {
+            else if (event.type == Blockly.Events.MOVE &&
+                lastEntry.index == i - 1) {
                 lastEvent.newParentId = event.newParentId;
                 lastEvent.newInputName = event.newInputName;
                 lastEvent.newCoordinate = event.newCoordinate;
+                lastEntry.index = i;
             }
             else if (event.type == Blockly.Events.CHANGE &&
                 event.element == lastEvent.element &&
@@ -38614,7 +38626,7 @@ Blockly.Events.filter = function (queueIn, forward) {
                 lastEvent.newValue = event.newValue;
             }
             else {
-                hash[key] = event;
+                hash[key] = { event: event, index: 1 };
                 mergedQueue.push(event);
             }
         }

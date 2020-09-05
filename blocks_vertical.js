@@ -4775,7 +4775,6 @@ Blockly.Blocks['argument_reporter_string_number'] = {
       ],
       "extensions": ["colours_more", "output_number", "output_string"]
     });
-    this.setOutput(true, ['Number', 'String']);
   }
 };
 
@@ -6344,8 +6343,7 @@ Blockly.ScratchBlocks.VerticalExtensions.PROCEDURE_DEF_CONTEXTMENU = {
           var didDelete = Blockly.Procedures.deleteProcedureDefCallback(
               procCode, rootBlock);
           if (!didDelete) {
-            // TODO:(#1151)
-            alert('To delete a block definition, first remove all uses of the block');
+            alert(Blockly.Msg.PROCEDURE_USED);
           }
         };
       }
