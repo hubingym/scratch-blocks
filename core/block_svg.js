@@ -680,6 +680,10 @@ Blockly.BlockSvg.prototype.showContextMenu_ = function(e) {
       menuOptions.push(Blockly.ContextMenu.blockCommentOption(block));
     }
     menuOptions.push(Blockly.ContextMenu.blockDeleteOption(block));
+    // Allow to add or modify menuOptions.
+    if (Blockly.customBlockContextMenu) {
+      Blockly.customBlockContextMenu(menuOptions, block);
+    }
   } else if (this.parentBlock_ && this.isShadow_) {
     this.parentBlock_.showContextMenu_(e);
     return;
